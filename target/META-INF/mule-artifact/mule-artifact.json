@@ -1,0 +1,29 @@
+{
+  "configs": [
+    "retrieve-customer-info.xml",
+    "demo-insurance-process-api_Multiple.xml"
+  ],
+  "secureProperties": [],
+  "redeploymentEnabled": true,
+  "name": "com.mycompany:d1-test-process:1.0.0-SNAPSHOT",
+  "minMuleVersion": "4.2.2-hf2",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [],
+      "exportedResources": [
+        "application-types.xml",
+        "demo-insurance-process-api_Multiple.xml",
+        "examples/completeCustomerResponse-1.json",
+        "examples/completeCustomerResponse.json",
+        "log4j2.xml",
+        "retrieve-customer-info.xml"
+      ]
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}

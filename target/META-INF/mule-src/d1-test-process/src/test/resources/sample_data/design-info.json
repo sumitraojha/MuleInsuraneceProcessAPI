@@ -1,0 +1,8 @@
+{
+  "sampleData": {
+    "e630ffa1-6d11-42cf-bfc1-a382ffb43f28": {
+      "vars-policyResponse2": "sample_data/unknown.json",
+      "vars-policyResponse1": "sample_data/unknown_1.json"
+    }
+  }
+}

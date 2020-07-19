@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:aggregators="http://www.mulesoft.org/schema/mule/aggregators"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/aggregators http://www.mulesoft.org/schema/mule/aggregators/current/mule-aggregators.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="943724e2-bf04-4bca-a97a-8a71e21e647b" >
+		<http:request-connection host="http://demo-insurance-system-api.us-e2.cloudhub.io/policy" />
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8eb8b462-20e2-45ee-9bc2-d8dc458a810d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="83f1cac0-da37-49ea-a3c8-ac59b36e4200" />
+	<os:object-store name="InsuranceObject_store" doc:name="Object store" doc:id="6d8a73c5-383a-44ab-befd-cd6ef642d145" />
+	<sub-flow name="inside-batch-Multiple_Sub_Flow1" doc:id="c9e012de-f9dc-4294-9c1e-93b01fb202d1" >
+		<http:request method="GET" doc:name="Request" doc:id="795cb5b7-f7a1-4f01-83ea-00805fb62187" url="http://demo-insurance-system-api.us-e2.cloudhub.io/autopolicy">
+						<http:query-params><![CDATA[#[output application/java
+---
+{
+	customerID : payload.CustomerID
+}]]]></http:query-params>
+					</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="de9cd26c-919c-4b03-9491-b13dfa921639" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="autopolicyResponse1" doc:id="f96922fc-2ae4-4a8c-801b-bc957e0bcf16" variableName="autopolicyResponse1" />
+		<logger level="INFO" doc:name="Logger" doc:id="fb311c8a-af18-4aba-ae1d-d95ca5bf5571" message="Response POLICY1 #[payload]" />
+	</sub-flow>
+	<sub-flow name="inside-batch-Multiple_Sub_Flow2" doc:id="7b83ce77-53af-45fa-a915-aa28b59b7189" >
+		<http:request method="GET" doc:name="Request" doc:id="37561565-e1e2-42f4-8f3e-033527976bf2" url="http://demo-insurance-system-api.us-e2.cloudhub.io/homepolicy">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	customerID : payload.CustomerID
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="c60afde4-22d5-4fa4-bdba-48a2668fef29" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="homepolicyResponse2" doc:id="fd965a67-5bdc-4fa7-b703-84a46c6a9472" variableName="homepolicyResponse2" />
+		<logger level="INFO" doc:name="Logger" doc:id="9027a4e1-1553-4d36-bb68-ef7ae6ba1d4e" message="Response POLICY2 #[payload]"/>
+	</sub-flow>
+	<sub-flow name="inside-batch-Multiple_Sub_Flow3" doc:id="a11fbc2f-95f9-4c2a-a127-cad933167aa3" >
+		<set-variable value='cc:783' doc:name="Set Variable" doc:id="7f1b94c9-4738-4ffe-9400-2f7f07964fa3" variableName="ccid"/>
+		<http:request method="GET" doc:name="Request" doc:id="9b644f57-78a9-4a45-bf2a-3d01fecbfb22" url="http://demo-insurance-system-api.us-e2.cloudhub.io/getClaimGW">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	customerID : vars.ccid
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="a5c15f3c-6990-4eb9-9539-e3e5c5a1b6a2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="ClaimGWResponse" doc:id="6ce61688-96e5-4d81-9b2c-56fb3ae5d957" variableName="claimGWResponse"/>
+		<logger level="INFO" doc:name="Logger" doc:id="a232cdc3-16e4-40ed-a0d9-035172f56f53" message="#[payload]"/>
+	</sub-flow>
+	<sub-flow name="inside-batch-Multiple_Sub_Flow4" doc:id="d61a857e-284e-4cff-a84b-3d65e795b3a1" >
+		<set-variable value="pc:154" doc:name="Set Variable" doc:id="6115f3ca-d2e3-4818-9a31-9b7073a1ca68" variableName="pcid"/>
+		<http:request method="GET" doc:name="Request" doc:id="8b8b830f-4966-4825-95d8-ee52c8bbd073" url="http://demo-insurance-system-api.us-e2.cloudhub.io/getPolicyGW">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	customerID : vars.pcid
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="1d62b26d-f5ab-472b-ad65-3e7b0ba08e9a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="dc582888-18da-46e9-9267-1a68b2ecd0e3" variableName="AutoPolicyGWResponse"/>
+		<logger level="INFO" doc:name="Logger" doc:id="b0162935-a1b2-40e1-98a3-cca4c00a1f33" message="#[payload]"/>
+	</sub-flow>
+	<flow name="demo-insurance-process-apiFlow" doc:id="0c7217eb-f998-4b1a-96a3-57e0dff38801">
+		<http:listener doc:name="Listener" doc:id="980952da-1276-4803-b453-484c01142a12" config-ref="HTTP_Listener_config" path="/multicustomer"/>
+		<set-variable value="#[attributes.queryParams.fname]" doc:name="fname" doc:id="a51fc2cf-073f-4cbd-a6a5-d15cb20bd39c" variableName="fname" />
+		<set-variable value="#[attributes.queryParams.lname]" doc:name="lname" doc:id="5ec25cf6-cc0a-4da1-a9fe-1357f549bcec" variableName="lname" />
+		<set-variable value="#[attributes.queryParams.dob]" doc:name="dob" doc:id="b2b2fe10-1196-40b0-9d9a-1fee8131cf0d" variableName="dob" />
+		<choice doc:name="Choice" doc:id="df8fdf79-fcb4-46c3-8a3b-614017ad1bd5">
+			<when expression="#[vars.fname !=null and vars.lname !=null and vars.dob !=null]">
+				<http:request method="GET" doc:name="Request" doc:id="031f3321-ddcf-4bd8-afde-01da3a2e9069" url="http://demo-insurance-system-api.us-e2.cloudhub.io/customer">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	fname : vars.fname,
+	lname : vars.lname,
+	dob : vars.dob
+}]]]></http:query-params>
+		</http:request>
+			</when>
+			<when expression="#[vars.fname !=null and vars.lname !=null and vars.dob ==null]">
+				<http:request method="GET" doc:name="Request" doc:id="5fb66f58-9f8e-4d61-b07b-b3a04dacc047" url="http://demo-insurance-system-api.us-e2.cloudhub.io/customer">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	fname : vars.fname,
+	lname : vars.lname
+}]]]></http:query-params>
+		</http:request>
+			</when>
+			<when expression="#[vars.fname !=null and vars.lname ==null and vars.dob !=null]">
+				<http:request method="GET" doc:name="Request" doc:id="d5c0fa84-69df-4d9a-8714-8b0e9b926813" url="http://demo-insurance-system-api.us-e2.cloudhub.io/customer">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	fname : vars.fname,
+	dob : vars.dob
+}]]]></http:query-params>
+		</http:request>
+			</when>
+			<when expression="#[vars.fname ==null and vars.lname !=null and vars.dob !=null]">
+				<http:request method="GET" doc:name="Request" doc:id="9fac4f9b-0f9e-4525-b9e3-9ab2d4cb971a" url="http://demo-insurance-system-api.us-e2.cloudhub.io/customer">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	lname : vars.lname,
+	dob : vars.dob
+}]]]></http:query-params>
+		</http:request>
+			</when>
+			<when expression="#[vars.fname !=null and vars.lname ==null and vars.dob ==null]">
+				<http:request method="GET" doc:name="Request" doc:id="d4e1cbf0-7b2f-43f6-ab8c-79e12f220599" url="http://demo-insurance-system-api.us-e2.cloudhub.io/customer">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	fname : vars.fname
+}]]]></http:query-params>
+		</http:request>
+			</when>
+			<when expression="#[vars.fname ==null and vars.lname !=null and vars.dob ==null]">
+				<http:request method="GET" doc:name="Request" doc:id="fdc6694f-89c1-4072-8b13-6d612325ca58" url="http://demo-insurance-system-api.us-e2.cloudhub.io/customer">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	lname : vars.lname
+}]]]></http:query-params>
+		</http:request>
+			</when>
+			<when expression="#[vars.fname ==null and vars.lname ==null and vars.dob !=null]">
+				<http:request method="GET" doc:name="Request" doc:id="dea48a39-4bf5-44dc-a611-f85ca1fad644" url="http://demo-insurance-system-api.us-e2.cloudhub.io/customer">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	dob : vars.dob
+}]]]></http:query-params>
+		</http:request>
+			</when>
+		</choice>
+		<ee:transform doc:name="Transform Message" doc:id="97dbd22d-0161-4991-b873-8aaeb7771d15">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<batch:job jobName="demo-insurance-process-api_MultipleBatch_Job" doc:id="b02d5027-9cf5-4300-8a0d-acd60217d9ce" blockSize="20">
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="51072172-4396-43d2-8511-c12d2494b9a7" >
+					<set-variable value="#[payload]" doc:name="CustomerSingleData" doc:id="477fc0ba-00b9-4b62-ba86-d15b345127ae" variableName="CustomerSingleData"/>
+					<flow-ref doc:name="Flow Reference" doc:id="2304d793-bd1b-4368-8885-1070113eb4b9" name="inside-batch-Multiple-flow"/>
+					<logger level="INFO" doc:name="Logger" doc:id="53ce9dec-42c9-4c8a-8d37-52808b83d103" message="Inside Batch :::::::::::: #[payload]"/>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="23b9aa5f-a39a-4200-b7d6-77b3c9e8f74a" size="15">
+						<ee:transform doc:name="Transform Message" doc:id="9f22684f-aa5a-4b87-ba12-308361e38dd8">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload as Array]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<logger level="INFO" doc:name="Logger" doc:id="7256e5a5-ae30-4fae-9935-df0fd1b4dc7d" message="Aggregated @@@@@@@@@@@@@#[payload]"/>
+						<set-variable value="key" doc:name="Set Variable customer Key" doc:id="90a7b559-adf9-4399-8acb-15c8826387e8" variableName="key"/>
+						<set-variable value="#[payload as Array]" doc:name="Set Variable-Aggregated customer data response" doc:id="aea91b6a-9b1b-4739-86fc-194bbe88072e" variableName="aggregatedCustomer"/>
+						<os:store doc:name="StoreCustomerInfo" doc:id="937b5005-bbf8-4921-b16b-9ac140334901" key="#[vars.key]" objectStore="InsuranceObject_store">
+							<os:value ><![CDATA[#[vars.aggregatedCustomer]]]></os:value>
+						</os:store>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+		</batch:job>
+	</flow>
+	<flow name="inside-batch-Multiple-flow" doc:id="a9212121-caec-4eb5-9ef3-80782630e692" >
+		<scatter-gather doc:name="Scatter-Gather" doc:id="421953a1-2426-4e1d-a5aa-e23a244ae4a5" >
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="526fcc51-0e12-459c-83c6-5f15482ff069" name="inside-batch-Multiple_Sub_Flow1" />
+			</route>
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="ca563ea4-3695-40a8-baa4-bb01a2620d4e" name="inside-batch-Multiple_Sub_Flow2"/>
+			</route>
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="c5c0833d-cff0-48ea-8ca1-2406e913daff" name="inside-batch-Multiple_Sub_Flow3"/>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message-response" doc:id="e630ffa1-6d11-42cf-bfc1-a382ffb43f28">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+"Customer"
+: {
+    CustomerID: vars.CustomerSingleData.CustomerID,
+    first_name: vars.CustomerSingleData.first_name,
+    last_name: vars.CustomerSingleData.last_name,
+    DOB: vars.CustomerSingleData.DOB,
+    company_name: vars.CustomerSingleData.company_name,
+    address: vars.CustomerSingleData.address,
+    city: vars.CustomerSingleData.city,
+    county: vars.CustomerSingleData.county,
+    state: vars.CustomerSingleData.state,
+    zip: vars.CustomerSingleData.zip,
+    phone1: vars.CustomerSingleData.phone1,
+    autopolicy:  vars.autopolicyResponse1.policy map (item1, index) ->
+      if( vars.autopolicyResponse1 != null){
+        "CustomerID" : (item1.CustomerID),
+        "policy ID" : (item1."Policy ID"),
+        "Coverage": (item1.Coverage),
+        "Effective To Date": (item1."Effective To Date"),
+        "Monthly Premium Auto": (item1."Monthly Premium Auto"),
+        "Months Since Last Claim": (item1."Months Since Last Claim"),
+        "Months Since Policy Inception": (item1."Months Since Policy Inception"),
+        "Number of Open Complaints": (item1."Number of Open Complaints"),
+        "Policy Type": (item1."Policy Type"),
+        "Vehicle Class": (item1."Vehicle Class"),
+        "Vehicle Size": (item1."Vehicle Size")
+    }
+     else "",
+     homepolicy: vars.homepolicyResponse2.homepolicy map (item2, index) ->
+     if( vars.homepolicyResponse2 != null){
+        "CustomerID" : (item2."CustomerID"),
+        "Policy Number":(item2."Policy Number"),
+		"QUOTE_DATE":(item2."QUOTE_DATE"),
+		"Effective Date":(item2."Effective Date"),
+		"CLAIM3YEARS":(item2."CLAIM3YEARS"),
+		"LAST_ANNUAL_PREMIUM_GROSS":(item2."LAST_ANNUAL_PREMIUM_GROSS"),
+		"PAYMENT_METHOD":(item2."PAYMENT_METHOD"),
+		"POLICY_STATUS":(item2."POLICY_STATUS"),
+		"AD_BUILDINGS":(item2."AD_BUILDINGS"),
+		"RISK_RATED_AREA_B":(item2."RISK_RATED_AREA_B"),
+		"LIMIT_BUILDINGS":(item2."LIMIT_BUILDINGS"),
+		"NCD_GRANTED_YEARS_B":(item2."NCD_GRANTED_YEARS_B"),
+		"AD_CONTENTS":(item2."AD_CONTENTS"),
+		"RISK_RATED_AREA_C":(item2."RISK_RATED_AREA_C"),
+		"LIMIT_CONTENTS":(item2."LIMIT_CONTENTS"),
+		"NCD_GRANTED_YEARS_C":(item2."NCD_GRANTED_YEARS_C"),
+		"CONTENTS_COVER":(item2."CONTENTS_COVER"),
+		"BUILDINGS_COVER":(item2."BUILDINGS_COVER"),
+		"SPEC_LIMIT":(item2."SPEC_LIMIT"),
+		"SPEC_ITEM_PREMIUM":(item2."SPEC_ITEM_PREMIUM"),
+		"UNSPEC_HRP_PREMIUM":(item2."UNSPEC_HRP_PREMIUM"),
+		"APPRMENT_ALARM":(item2."APPRMENT_ALARM"),
+		"APPRMENT_LOCKS":(item2."APPRMENT_LOCKS"),
+		"BEDROOMS":(item2."BEDROOMS"),
+		"ROOF_CONSTRUCTION_CODE":(item2."ROOF_CONSTRUCTION_CODE"),
+		"WALL_CONSTRUCTION_CODE":(item2."WALL_CONSTRUCTION_CODE"),
+		"FLOOD_RISK_ZONE":(item2."FLOOD_RISK_ZONE"),
+		"NEIGH_WATCH":(item2."NEIGH_WATCH"),
+		"OWNERSHIP_TYPE_CODE":(item2."OWNERSHIP_TYPE_CODE"),
+		"PAYING_GUESTS":(item2."PAYING_GUESTS"),
+		"PROP_TYPE_CODE":(item2."PROP_TYPE_CODE"),
+		"SAFE_INSTALLED":(item2."SAFE_INSTALLED"),
+		"SEC_DISC_REQ":(item2."SEC_DISC_REQ"),
+		"SUBSIDENCE":(item2."SUBSIDENCE"),
+		"YEARBUILT":(item2."YEARBUILT")
+    }
+     else "",
+     claimGW : vars.claimGWResponse.ClaimGW map (item3, index) ->
+     if( vars.claimGWResponse != null){
+     
+      "ClaimNumber": (item3."ClaimNumber"),
+      "FraudIndicator": (item3."FraudIndicator"),
+      "LitigationIndicator": (item3."LitigationIndicator"),
+      "LossDate": (item3."LossDate"),
+      "PolicyNumber": (item3."PolicyNumber"),
+      "PolicyTypeName": (item3."PolicyTypeName"),
+      "RemainingReserves": (item3."RemainingReserves"),
+      "RemainingReservesCurrency": (item3."RemainingReservesCurrency"),
+      "Status": (item3."Status"),
+      "TotalIncurred": (item3."TotalIncurred"),
+      "TotalIncurredCurrency": (item3."TotalIncurredCurrency")
+    }
+    else ""
+ 
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="827a1bae-28f5-4c6d-b818-c25f074abb6e" message="After SCATTER-GATHER #[payload]"/>
+	</flow>
+</mule>

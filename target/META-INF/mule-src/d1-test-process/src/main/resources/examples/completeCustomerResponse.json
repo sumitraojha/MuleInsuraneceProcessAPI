@@ -1,0 +1,42 @@
+{
+    "CustomerID": "RU83859",
+    "first_name": "Jamal",
+    "last_name": "Vanausdal",
+    "DOB": "1/13/1991",
+    "company_name": "Hubbard  Bruce Esq",
+    "address": "53075 Sw 152nd Ter #615",
+    "city": "Monroe Township",
+    "county": "Middlesex",
+    "state": "NJ",
+    "zip": "8831",
+    "phone1": "732-234-1546",
+	"policies":{
+	"policy":{
+			"CustomerID": "UM45563",
+			"Policy ID": "FM14335",
+			"Coverage": "Basic",
+			"Effective To Date": "1/27/11",
+			"Monthly Premium Auto": "114",
+			"Months Since Last Claim": "19",
+			"Months Since Policy Inception": "69",
+			"Number of Open Complaints": "0",
+			"Policy Type": "Personal Auto",
+			"Vehicle Class": "SUV",
+			"Vehicle Size": "Medsize"
+		},
+	"policy":{
+			"CustomerID": "UM45563",
+			"Policy ID": "FM14335",
+			"Coverage": "Basic",
+			"Effective To Date": "1/27/11",
+			"Monthly Premium Auto": "114",
+			"Months Since Last Claim": "19",
+			"Months Since Policy Inception": "69",
+			"Number of Open Complaints": "0",
+			"Policy Type": "Personal Auto",
+			"Vehicle Class": "SUV",
+			"Vehicle Size": "Medsize"
+		}	
+		}
+	
+  }

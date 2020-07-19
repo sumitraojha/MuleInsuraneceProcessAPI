@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="7ba57ed3-f228-44ab-a0e6-d31bc23b9cad" />
+	<flow name="retrieve-customer-infoFlow" doc:id="0a3bef1b-c355-4609-bff6-6eb51ba3f38c" >
+		<http:listener doc:name="Listener-retrieve customer" doc:id="4bc40ecd-f5dc-44d2-b9eb-89a9e313d122" config-ref="HTTP_Listener_config" path="/retrieve"/>
+		<set-variable value="" doc:name="Set Variable" doc:id="683869d4-251f-47ec-9837-c30197fce805" variableName="key"/>
+		<os:retrieve doc:name="Retrieve" doc:id="05655b08-1e86-4543-80e0-c2e2baaabe5d" key="customerinfo" objectStore="Object_store"/>
+	</flow>
+</mule>

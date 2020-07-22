@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:aggregators="http://www.mulesoft.org/schema/mule/aggregators"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/aggregators http://www.mulesoft.org/schema/mule/aggregators/current/mule-aggregators.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<os:object-store name="InsuranceObject_store" doc:name="Object store" doc:id="6d8a73c5-383a-44ab-befd-cd6ef642d145" />
+	<flow name="process-api-objectstore" doc:id="9e0a7d12-acf2-41e8-80e1-ce64caf5cbaa" >
+		<set-variable value="#[[]]" doc:name="Set Variable CompleteCustomerInfoList" doc:id="8ed46b25-ea89-4de3-9e69-f9ad5aae8a6b" variableName="CompleteCustomerInfoList" />
+		<foreach doc:name="For Each" doc:id="c89b87b1-7f3d-4326-b831-f4d72d1cf3c8" collection="#[payload]">
+						<set-variable value="#[payload]" doc:name="CustomerSingleData" doc:id="477fc0ba-00b9-4b62-ba86-d15b345127ae" variableName="CustomerSingleData" />
+			<logger level="INFO" doc:name="Logger" doc:id="92eaab4a-9aa8-4734-b470-7bfc8594213d" message="Before Merging #[payload]" />
+			<flow-ref doc:name="Flow Reference" doc:id="2304d793-bd1b-4368-8885-1070113eb4b9" name="Policies-Main-flow" />
+						<logger level="INFO" doc:name="Logger" doc:id="53ce9dec-42c9-4c8a-8d37-52808b83d103" message="after flow :::::::::::: #[vars.SingleCustomerComplete]" />
+			<ee:transform doc:name="Transform Message" doc:id="ece1bf66-0727-439d-a5c4-05657877ecb8">
+						<ee:message>
+						</ee:message>
+						<ee:variables>
+							<ee:set-variable variableName="CompleteCustomerInfoList"><![CDATA[%dw 2.0
+output application/java
+---
+
+vars.CompleteCustomerInfoList + vars.SingleCustomerComplete]]></ee:set-variable>
+							
+						</ee:variables>
+					</ee:transform>
+						<logger level="INFO" doc:name="Logger" doc:id="7c5b9629-5bfc-455c-b15b-fc4db1418ec8" message="After Customers added to :::::::::::::::::: #[vars.CompleteCustomerInfoList]" />
+					</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="feedd0bb-efc9-44df-85ff-176659df35fb">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+vars.CompleteCustomerInfoList]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5979a45a-c1f9-4513-80a9-de9d147ca1b0" message="The Complete Customer Details List after processing:&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;#[vars.CompleteCustomerInfoList]" />
+		<set-variable value="key" doc:name="key-objectstore" doc:id="2145bf53-475a-4830-aa01-545bd84828f1" variableName="key" />
+		<os:store doc:name="Store" doc:id="b71a4193-710d-4ea6-bef1-811c5489ab82" key="#[vars.key]" objectStore="InsuranceObject_store">
+			<os:value><![CDATA[#[vars.CompleteCustomerInfoList]]]></os:value>
+		</os:store>
+	</flow>
+</mule>

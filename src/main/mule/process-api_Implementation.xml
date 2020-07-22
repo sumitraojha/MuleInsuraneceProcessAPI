@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:aggregators="http://www.mulesoft.org/schema/mule/aggregators"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/aggregators http://www.mulesoft.org/schema/mule/aggregators/current/mule-aggregators.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<flow name="process-api-implementation-Flow" doc:id="0c7217eb-f998-4b1a-96a3-57e0dff38801">
+		<set-variable value="#[attributes.queryParams.fname]" doc:name="fname" doc:id="a51fc2cf-073f-4cbd-a6a5-d15cb20bd39c" variableName="fname" />
+		<set-variable value="#[attributes.queryParams.lname]" doc:name="lname" doc:id="5ec25cf6-cc0a-4da1-a9fe-1357f549bcec" variableName="lname" />
+		<set-variable value="#[attributes.queryParams.dob]" doc:name="dob" doc:id="b2b2fe10-1196-40b0-9d9a-1fee8131cf0d" variableName="dob" />
+		<choice doc:name="Choice" doc:id="df8fdf79-fcb4-46c3-8a3b-614017ad1bd5">
+			<when expression="#[vars.fname !=null and vars.lname !=null and vars.dob !=null]">
+				<http:request method="GET" doc:name="Request" doc:id="031f3321-ddcf-4bd8-afde-01da3a2e9069" url="http://demo-insurance-system-api.us-e2.cloudhub.io/customer">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	fname : vars.fname,
+	lname : vars.lname,
+	dob : vars.dob
+}]]]></http:query-params>
+		</http:request>
+			</when>
+			<when expression="#[vars.fname !=null and vars.lname !=null and vars.dob ==null]">
+				<http:request method="GET" doc:name="Request" doc:id="5fb66f58-9f8e-4d61-b07b-b3a04dacc047" url="http://demo-insurance-system-api.us-e2.cloudhub.io/customer">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	fname : vars.fname,
+	lname : vars.lname
+}]]]></http:query-params>
+		</http:request>
+			</when>
+			<when expression="#[vars.fname !=null and vars.lname ==null and vars.dob !=null]">
+				<http:request method="GET" doc:name="Request" doc:id="d5c0fa84-69df-4d9a-8714-8b0e9b926813" url="http://demo-insurance-system-api.us-e2.cloudhub.io/customer">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	fname : vars.fname,
+	dob : vars.dob
+}]]]></http:query-params>
+		</http:request>
+			</when>
+			<when expression="#[vars.fname ==null and vars.lname !=null and vars.dob !=null]">
+				<http:request method="GET" doc:name="Request" doc:id="9fac4f9b-0f9e-4525-b9e3-9ab2d4cb971a" url="http://demo-insurance-system-api.us-e2.cloudhub.io/customer">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	lname : vars.lname,
+	dob : vars.dob
+}]]]></http:query-params>
+		</http:request>
+			</when>
+			<when expression="#[vars.fname !=null and vars.lname ==null and vars.dob ==null]">
+				<http:request method="GET" doc:name="Request" doc:id="d4e1cbf0-7b2f-43f6-ab8c-79e12f220599" url="http://demo-insurance-system-api.us-e2.cloudhub.io/customer">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	fname : vars.fname
+}]]]></http:query-params>
+		</http:request>
+			</when>
+			<when expression="#[vars.fname ==null and vars.lname !=null and vars.dob ==null]">
+				<http:request method="GET" doc:name="Request" doc:id="fdc6694f-89c1-4072-8b13-6d612325ca58" url="http://demo-insurance-system-api.us-e2.cloudhub.io/customer">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	lname : vars.lname
+}]]]></http:query-params>
+		</http:request>
+			</when>
+			<when expression="#[vars.fname ==null and vars.lname ==null and vars.dob !=null]">
+				<http:request method="GET" doc:name="Request" doc:id="dea48a39-4bf5-44dc-a611-f85ca1fad644" url="http://demo-insurance-system-api.us-e2.cloudhub.io/customer">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	dob : vars.dob
+}]]]></http:query-params>
+		</http:request>
+			</when>
+		</choice>
+		<ee:transform doc:name="Transform Message" doc:id="97dbd22d-0161-4991-b873-8aaeb7771d15">
+			<ee:message>
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="77c74892-9457-4dd4-ab26-81644cb4e738" name="process-api-objectstore"/>
+	</flow>
+</mule>
